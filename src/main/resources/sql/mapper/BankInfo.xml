@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ucsmy.jindu.manage.manage.dao.BankInfoMapper">
+
+    <resultMap id="bankInfo" type="com.ucsmy.jindu.manage.manage.entity.BankInfo">
+        <result column="code" property="code" jdbcType="VARCHAR" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="abbreviation" property="abbreviation" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+   <select id="query" resultMap="bankInfo" parameterType="map">
+       SELECT * FROM jindu_bank_info i
+       <where>
+           <if test="!(bankInfo.name == null || bankInfo.name == '')">
+            AND   i.name LIKE concat('%', #{bankInfo.name}, '%')
+           </if>
+           <if test="!(bankInfo.code == null || bankInfo.code == '')">
+               AND   i.code LIKE concat('%', #{bankInfo.code}, '%')
+           </if>
+           <if test="!(bankInfo.status == null || bankInfo.status == '')">
+               AND   i.status=#{bankInfo.status}
+           </if>
+       </where>
+   </select>
+
+    <select id="queryByCode" parameterType="String" resultMap="bankInfo">
+        SELECT * FROM jindu_bank_info i
+        WHERE i.code=#{code}
+        LIMIT 1
+    </select>
+
+    <update id="updateStatus" parameterType="com.ucsmy.jindu.manage.manage.entity.BankInfo">
+        UPDATE jindu_bank_info SET status=#{status}
+        WHERE code=#{code}
+    </update>
+
+</mapper>

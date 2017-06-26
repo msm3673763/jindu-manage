@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ucsmy.jindu.manage.manage.dao.FeedbackMapper">
+
+    <resultMap id="feedback" type="com.ucsmy.jindu.manage.manage.entity.Feedback">
+        <result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="message" property="message" jdbcType="VARCHAR" />
+        <result column="contact" property="contact" jdbcType="VARCHAR" />
+        <result column="order_number" property="orderNumber" jdbcType="VARCHAR" />
+        <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+        <result column="create_date" property="createDate" javaType="java.util.Date" />
+        <result column="process_user" property="processUser" jdbcType="VARCHAR" />
+        <result column="process_date" property="processDate" javaType="java.util.Date" />
+    </resultMap>
+
+    <select id="queryFeedbackListByPage" parameterType="map" resultMap="feedback">
+        SELECT
+        *
+        from
+        jindu_feedback
+        <where>
+            <if test="!(orderNumber == null || orderNumber == '')">
+                AND order_number LIKE  concat('%', #{orderNumber}, '%')
+            </if>
+        </where>
+        order by
+        create_date desc
+    </select>
+
+</mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ucsmy.jindu.manage.manage.dao.ApplicationMapper">
+
+    <resultMap id="application" type="com.ucsmy.jindu.manage.manage.entity.Application">
+        <result column="uuid" property="uuid" jdbcType="VARCHAR" />
+        <result column="apply_name" property="applyName" jdbcType="VARCHAR" />
+        <result column="apply_des" property="applyDes" jdbcType="VARCHAR" />
+        <result column="apply_url" property="applyUrl" jdbcType="VARCHAR" />
+        <result column="img_enter" property="imgEnter" jdbcType="VARCHAR" />
+        <result column="img_move" property="imgMove" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+        <result column="modify_time" property="modifyTime" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="query" parameterType="map" resultMap="application">
+        SELECT * from jindu_application
+       <where>
+           <if test="!(applyName == null || applyName == '')">
+             AND  apply_name LIKE  concat('%', #{applyName}, '%')
+           </if>
+       </where>
+        order by create_time desc, apply_name
+    </select>
+
+   <insert id="add" parameterType="com.ucsmy.jindu.manage.manage.entity.Application">
+       INSERT INTO jindu_application(uuid,apply_name,apply_des,apply_url,img_enter,img_move,status,create_time,modify_time)
+       VALUE(#{uuid},#{applyName},#{applyDes},#{applyUrl},#{imgEnter},#{imgMove},#{status},now(),now())
+   </insert>
+
+    <delete id="del" parameterType="String">
+        DELETE FROM jindu_application WHERE uuid=#{uuid}
+    </delete>
+
+    <update id="update" parameterType="com.ucsmy.jindu.manage.manage.entity.Application">
+        UPDATE jindu_application
+        SET
+        apply_name=#{applyName},
+        apply_des=#{applyDes},
+        apply_url=#{applyUrl},
+        img_enter=#{imgEnter},
+        img_move=#{imgMove},
+        status=#{status},
+        modify_time=#{modifyTime}
+        WHERE uuid=#{uuid}
+    </update>
+
+    <select id="queryDetail" parameterType="String" resultMap="application">
+        SELECT * from jindu_application WHERE uuid=#{uuid}
+    </select>
+
+    <select id="isNameExist" parameterType="String" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        jindu_application
+        where
+        apply_name = #{name}
+    </select>
+
+
+    <select id="isNameExistWithId" parameterType="map" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        jindu_application
+        where
+        apply_name = #{name}
+        and
+        uuid != #{uuid}
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ucsmy.jindu.manage.manage.dao.ClientMapper">
+
+    <resultMap id="client" type="com.ucsmy.jindu.manage.manage.entity.Client">
+        <result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="md5" property="md5" jdbcType="VARCHAR" />
+        <result column="description" property="description" jdbcType="VARCHAR" />
+        <result column="file_id" property="fileId" jdbcType="VARCHAR" />
+        <result column="create_date" property="createDate" javaType="java.util.Date" />
+    </resultMap>
+
+    <select id="queryClientListByPage" parameterType="map" resultMap="client">
+        SELECT
+        *
+        from
+        jindu_client
+        <where>
+            <if test="!(name == null || name == '')">
+                AND name LIKE  concat('%', #{name}, '%')
+            </if>
+        </where>
+        order by
+        create_date desc
+    </select>
+
+    <insert id="addClient" parameterType="com.ucsmy.jindu.manage.manage.entity.Client">
+        INSERT INTO
+          jindu_client(id, name, md5, description, file_id, create_date)
+        VALUE
+          (
+            #{id},
+            #{name},
+            #{md5},
+            #{description},
+            #{fileId},
+            #{createDate}
+          )
+    </insert>
+
+    <delete id="deleteClient" parameterType="String">
+        DELETE FROM jindu_client WHERE id=#{id}
+    </delete>
+
+
+    <select id="getClient" resultMap="client" parameterType="string">
+        select
+          *
+        from
+          jindu_client
+        where
+          id = #{id}
+    </select>
+
+</mapper>

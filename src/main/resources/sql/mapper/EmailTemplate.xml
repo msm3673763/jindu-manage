@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ucsmy.jindu.manage.manage.dao.EmailTemplateMapper">
+
+    <resultMap id="template" type="com.ucsmy.jindu.manage.manage.entity.EmailTemplate">
+        <result column="id" property="id"  />
+        <result column="title" property="title"  />
+        <result column="content" property="content" />
+        <result column="type" property="type"  />
+        <result column="typeKey" property="typeKey"  />
+        <result column="typeName" property="typeName"  />
+        <result column="description" property="description"   />
+    </resultMap>
+    <sql id="template_table">
+        jindu_email_template
+    </sql>
+    <sql id="param_table">
+        jindu_param
+    </sql>
+    <select id="queryTemplateListByPage" resultMap="template" >
+        SELECT
+          te.id AS id,
+          te.title AS title,
+          te.content AS content,
+          te.type AS type,
+          pa.param_key AS typeKey,
+          pa.param_value AS typeName,
+          te.description AS description
+        FROM
+          <include refid="template_table" /> AS te
+        LEFT JOIN
+          <include refid="param_table" /> AS pa
+        ON
+          te.type = pa.id
+        <where>
+            <if test='!(title == null || title == "")'>
+                AND te.title LIKE concat('%', #{title}, '%')
+            </if>
+            AND te.is_deleted = '0'
+        </where>
+        ORDER BY te.id
+    </select>
+    <select id="countTemplateByType" resultType="long" parameterType="string">
+        SELECT
+          count(id)
+        FROM
+          <include refid="template_table" />
+        <where>
+            type = #{type}
+            AND is_deleted = '0'
+        </where>
+    </select>
+    <select id="queryTemplateListByType" resultMap="template" parameterType="string">
+        SELECT
+        te.id AS id,
+        te.title AS title,
+        te.content AS content,
+        te.type AS type,
+        te.description AS description
+        FROM
+        <include refid="template_table" /> AS te
+        <where>
+            te.type = #{type}
+            AND te.is_deleted = '0'
+        </where>
+    </select>
+    <select id="queryTemplateByTypeValue" resultMap="template" parameterType="string">
+        SELECT
+        te.id AS id,
+        te.title AS title,
+        te.content AS content,
+        pa.param_value AS typeName,
+        te.description AS description
+        FROM
+          <include refid="template_table" /> AS te
+        LEFT JOIN
+          <include refid="param_table" /> AS pa
+        ON
+          te.type = pa.id
+        <where>
+            pa.param_key = #{type}
+            AND pa.type = 'template_type'
+            AND te.is_deleted = '0'
+        </where>
+    </select>
+    <insert id="addTemplate" parameterType="com.ucsmy.jindu.manage.manage.entity.EmailTemplate">
+        INSERT INTO
+          <include refid="template_table" />
+          (
+            id,
+            title,
+            content,
+            type,
+            description,
+            is_deleted
+          )
+        VALUES
+          (
+            #{id},
+            #{title},
+            #{content},
+            #{type},
+            #{description},
+            #{isDeleted}
+        )
+    </insert>
+
+    <update id="updateTemplate" parameterType="com.ucsmy.jindu.manage.manage.entity.EmailTemplate">
+        UPDATE
+          <include refid="template_table" />
+        SET
+          title = #{title},
+          content = #{content},
+          type = #{type},
+          description = #{description}
+        <where>
+          id = #{id}
+        </where>
+    </update>
+
+    <update id="updateTemplateToDelete" parameterType="string">
+        UPDATE
+          <include refid="template_table" />
+        SET
+          is_deleted = '1'
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

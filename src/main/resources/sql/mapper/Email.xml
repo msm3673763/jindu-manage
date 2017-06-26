@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ucsmy.jindu.manage.manage.dao.EmailMapper">
+
+    <resultMap id="email" type="com.ucsmy.jindu.manage.manage.entity.Email">
+        <result column="uuid" property="uuid" jdbcType="VARCHAR" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="domain_name" property="domainName" jdbcType="VARCHAR" />
+        <result column="domain_url" property="domainUrl" jdbcType="VARCHAR" />
+        <result column="des" property="des" jdbcType="VARCHAR" />
+        <result column="CREATE_DATE" property="createDate" jdbcType="VARCHAR" />
+        <result column="MODIFY_DATE" property="modifyDate" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+
+    <select id="query" parameterType="String" resultMap="email">
+        SELECT * from jindu_email_domain
+       <where>
+           <if test="!(name == null || name == '')">
+               name LIKE  concat('%', #{name}, '%')
+           </if>
+
+       </where>
+
+    </select>
+
+   <insert id="addJinDuEmail" parameterType="com.ucsmy.jindu.manage.manage.entity.Email">
+       INSERT INTO jindu_email_domain(uuid,name,domain_name,domain_url,des,CREATE_DATE,MODIFY_DATE)
+       VALUE(#{uuid},#{name},#{domainName},#{domainUrl},#{des},now(),now())
+   </insert>
+
+    <delete id="delJinDuEmail" parameterType="String">
+        DELETE FROM jindu_email_domain WHERE uuid=#{uuid}
+    </delete>
+
+    <update id="updateJinDuEmail" parameterType="com.ucsmy.jindu.manage.manage.entity.Email">
+        UPDATE jindu_email_domain SET name=#{name},
+        domain_name=#{domainName},
+        domain_url=#{domainUrl},
+        des=#{des},
+        MODIFY_DATE=now()
+        WHERE uuid=#{uuid}
+    </update>
+
+    <select id="queryDetail" parameterType="String" resultMap="email">
+        SELECT * from jindu_email_domain WHERE uuid=#{uuid}
+    </select>
+
+    <select id="isExitCom" parameterType="String" resultType="int">
+        SELECT count(1) FROM jindu_email_domain j
+        <where>
+            j.domain_name=#{domainName}
+            <if test="!(uuid == null || uuid == '')">
+            AND j.uuid!=#{uuid}
+            </if>
+        </where>
+
+    </select>
+
+</mapper>

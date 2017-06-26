@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ucsmy.jindu.manage.manage.dao.BankMapper">
+
+    <resultMap id="bank" type="com.ucsmy.jindu.manage.manage.ext.BankDetailPojo">
+        <result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="nations_no" property="nationsNo" jdbcType="VARCHAR" />
+        <result column="bank_type" property="bankType" jdbcType="VARCHAR" />
+        <result column="bank_direct_no" property="bankDirect" jdbcType="VARCHAR" />
+        <result column="node_no" property="nodeNo" jdbcType="VARCHAR" />
+        <result column="city_no" property="cityNo" jdbcType="VARCHAR" />
+        <result column="bank_name" property="bankName" jdbcType="VARCHAR" />
+        <result column="area" property="area" jdbcType="VARCHAR" />
+        <result column="postcode" property="postcode" jdbcType="VARCHAR" />
+        <result column="phone" property="phone" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
+        <result column="city_name" property="cityName" jdbcType="VARCHAR" />
+        <result column="province_name" property="provinceName" jdbcType="VARCHAR" />
+        <result column="province_no" property="provinceNo" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+
+    <select id="query" parameterType="map" resultMap="bank">
+        SELECT b.*,
+        c.city_name,
+        p.province_name,
+        p.province_no
+        from jindu_bank b
+        LEFT JOIN jindu_city c ON b.city_no=c.city_no
+        LEFT JOIN jindu_province p ON c.province_no=p.province_no
+       <where>
+           <if test="!(bank.provinceNo == null || bank.provinceNo == '')">
+             AND  p.province_no=#{bank.provinceNo}
+           </if>
+           <if test="!(bank.cityNo == null || bank.cityNo == '')">
+               AND  b.city_no=#{bank.cityNo}
+           </if>
+           <if test="!(bank.status == null || bank.status == '')">
+               AND  b.status=#{bank.status}
+           </if>
+           <if test="!(bank.nationsNo == null || bank.nationsNo == '')">
+               AND  b.nations_no LIKE  concat('%', #{bank.nationsNo}, '%')
+           </if>
+           <if test="!(bank.bankName == null || bank.bankName == '')">
+               AND  b.bank_name LIKE  concat('%', #{bank.bankName}, '%')
+           </if>
+           <if test="!(bank.bankDirect == null || bank.bankDirect == '')">
+               AND  b.bank_direct_no LIKE  concat('%', #{bank.bankDirect}, '%')
+           </if>
+       </where>
+       ORDER BY c.city_no
+    </select>
+
+   <insert id="add" parameterType="com.ucsmy.jindu.manage.manage.entity.Bank">
+       INSERT INTO jindu_bank(nations_no,
+                              bank_type,
+                              bank_direct_no,
+                              node_no,
+                              city_no,
+                              bank_name,
+                              area,
+                              postcode,
+                              phone,
+                              status)
+       VALUE(#{nationsNo},
+             #{bankType},
+             #{bankDirect},
+             #{nodeNo},
+             #{cityNo},
+             #{bankName},
+             #{area},
+             #{postcode},
+             #{phone},
+             #{status}
+       )
+   </insert>
+
+    <delete id="del" parameterType="String">
+        DELETE FROM jindu_bank WHERE id=#{id}
+    </delete>
+
+    <update id="update" parameterType="com.ucsmy.jindu.manage.manage.entity.Bank">
+        UPDATE jindu_bank SET nations_no=#{nationsNo},
+        bank_type=#{bankType},
+        bank_direct_no=#{bankDirect},
+        node_no=#{nodeNo},
+        city_no=#{cityNo},
+        bank_name=#{bankName},
+        area=#{area},
+        postcode=#{postcode},
+        phone=#{phone},
+        status=#{status}
+        WHERE id=#{id}
+    </update>
+
+    <select id="queryDetail" parameterType="String" resultMap="bank">
+        SELECT * from jindu_bank WHERE id=#{id}
+    </select>
+
+    <select id="isExitNo" parameterType="String" resultType="int">
+        SELECT count(1) FROM jindu_bank j
+        <where>
+            j.bank_no=#{bankNo}
+            <if test="!(id == null || id == '')">
+            AND j.id!=#{id}
+            </if>
+        </where>
+
+    </select>
+
+</mapper>

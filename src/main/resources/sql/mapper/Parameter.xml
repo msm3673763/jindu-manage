@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ucsmy.jindu.manage.manage.dao.ParameterMapper">
+
+    <resultMap id="parameter" type="com.ucsmy.jindu.manage.manage.ext.ParameterPojo">
+        <result column="id" property="id"  />
+        <result column="type" property="type"  />
+        <result column="param_key" property="key" />
+        <result column="param_value" property="value"  />
+        <result column="priority" property="priority"   />
+        <result column="name" property="paramName"   />
+    </resultMap>
+    <sql id="param_table">
+        jindu_param
+    </sql>
+    <sql id="selectCol">
+        id,
+        type,
+        param_key,
+        param_value
+    </sql>
+    <select id="queryParameterListByPage" resultMap="parameter" parameterType="string">
+        SELECT
+         t.name,
+         p.*
+        FROM
+        jindu_param_type t,jindu_param p
+        <where>
+            t.param_type=p.type
+            <if test='!(paramValue == null || paramValue == "")'>
+               AND param_value LIKE concat('%', #{paramValue}, '%')
+            </if>
+            <if test='!(paramType == null || paramType == "")'>
+                AND t.param_type LIKE concat('%', #{paramType}, '%')
+            </if>
+        </where>
+        ORDER BY priority,param_key
+    </select>
+    <select id="queryParameterByType" resultMap="parameter" parameterType="string">
+        SELECT
+          <include refid="selectCol" />
+        FROM
+          <include refid="param_table" />
+        <where>
+            type = #{type}
+        </where>
+        ORDER BY priority ASC
+    </select>
+    <select id="queryParameterByTypeAndKey" resultType="com.ucsmy.jindu.manage.manage.entity.Parameter">
+        SELECT
+          <include refid="selectCol" />
+        FROM
+          <include refid="param_table" />
+        <where>
+            type = #{type}
+            AND param_key = #{key}
+            LIMIT 1
+        </where>
+    </select>
+
+    <select id="isExitParam" parameterType="com.ucsmy.jindu.manage.manage.entity.Parameter" resultType="int">
+        SELECT COUNT(1) FROM jindu_param p
+        WHERE p.type=#{type}
+        AND p.param_key=#{key}
+        <if test='!(id == null || id == "")'>
+         AND   p.id!=#{id}
+        </if>
+
+    </select>
+
+    <insert id="addParameter" parameterType="com.ucsmy.jindu.manage.manage.entity.Parameter">
+        INSERT INTO
+          <include refid="param_table" />
+            (
+            id,
+            type,
+            param_key,
+            param_value,
+            priority
+            )
+            VALUES
+            (
+            #{id},
+            #{type},
+            #{key},
+            #{value},
+            #{priority}
+            )
+    </insert>
+
+    <update id="updateParameter" parameterType="com.ucsmy.jindu.manage.manage.entity.Parameter">
+        UPDATE
+          <include refid="param_table" />
+        SET
+          type = #{type},
+          param_key = #{key},
+          param_value = #{value},
+          priority = #{priority}
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+    <delete id="deleteParameter" parameterType="string">
+        DELETE FROM
+          <include refid="param_table" />
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <select id="getparamTypes" resultType="com.ucsmy.jindu.manage.manage.entity.ParamType">
+        SELECT
+        t.param_type as paramType,
+        t.name as name
+        FROM jindu_param_type t
+    </select>
+
+</mapper>

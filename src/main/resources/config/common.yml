@@ -1,0 +1,78 @@
+#添加用户
+user.add: oauth/resource/user/add_user
+#冻结用户
+user.free: oauth/resource/user/freeze_user
+#解冻用户
+user.unfree: oauth/resource/user/refreeze_user
+#删除用户
+user.del: oauth/resource/user/del_user
+#修改密码
+user.updatePassword: oauth/resource/user/mod_password
+#修改邮箱帐号
+user.updateModeEmail: oauth/resource/user/mod_email
+#修改手机帐号
+user.updateModeMobile: oauth/resource/user/mod_mobile
+#获取帐号详情
+user.user: oauth/resource/user/get_user
+#更改用户基本信息
+user.updateInfo: oauth/resource/user/update_info
+user.updateInfo: oauth/resource/user/update_info
+#获取token
+user.token: oauth/accessToken?grant_type=client_credentials&scope=client_ticket
+#获取ticket
+user.ticket: oauth/resource/ticket/getTicket?scope=aos_api_manage&access_token=
+
+#登录方式选择
+loginType.localType: true
+#第三方登录url
+loginType.mainIndex: index
+loginType.oauth2Url: oauth/authorize?response_type=code&scope=client_userinfo&state=123&client_id=
+loginType.localLoginUrl: login
+#loginType.clientId: 10000009
+#loginType.clientSecret: 015c-c3637bac-0001
+loginType.getTokenUrl: oauth/accessToken
+loginType.logout: oauth/logout?response_type=code&scope=client_userinfo&state=123&client_id=
+#最大空闲数
+redis.maxIdle: 100
+#最大连接数
+redis.maxActive: 300
+#最大建立连接等待时间
+redis.maxWait: 1000
+#客户端超时时间单位是毫秒
+redis.timeout: 100000
+redis.maxTotal: 1000
+redis.minIdle: 8
+#明是否在从池中取出连接前进行检验,如果检验失败,则从池中去除连接并尝试取出另一个
+redis.testOnBorrow: true
+
+# log信息是否输出到数据库
+log.outputJdbc: true
+
+# 序列号生成器配置，格式：4位前缀 + 8位日期 + 6位流水号，限制长度必须为18位，目前长度不支持配置
+# 是否开启:true;false
+serialNumber.open: true
+# 生成模式：db；redis; default(乱序模式)
+serialNumber.mode: redis
+# 序列号默认前缀
+serialNumber.prefix: 1000
+# 序列号备用前缀，当出现重复主键时使用备用序列号生成器生成
+serialNumber.backupPrefix: 9900
+# 序列号编号格式
+serialNumber.numberPattern: 000000
+# 序列号日期格式
+serialNumber.datePattern: yyMMddHH
+# db模式线程最大等待时间，毫秒
+serialNumber.waitTime: 10000
+
+
+####################### 企业账号打款接口
+# 统一认证 id
+enterpriseAccount.clientId: 10000009
+# 统一认证 密码
+enterpriseAccount.clientSecret: 015c-c3637bac-0001
+# 企业账号打款明细查询接口
+enterpriseAccount.listDetailUrl: /corpAccount/listAuthDetail
+#企业统计
+enterpriseAccount.companyCount: /corpAccount/transAccountStatistics
+#改变打款状态
+enterpriseAccount.updateCorporDepositNoStatus: /corpValidate/updateCorporDepositNoStatus
